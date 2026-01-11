@@ -48,47 +48,47 @@ help:
 	@echo "  make clean   - Remove the 'build/' directory"
 	@echo "  make serve   - Serve web release build on port 8080"
 
-linux: lib/linux/libraylib.a build/linux/debug/$(EXE_NAME) build/linux/release/$(EXE_NAME) 
+linux: build/linux/debug/$(EXE_NAME) build/linux/release/$(EXE_NAME)
 
-windows: lib/windows/libraylib.a build/windows/debug/$(EXE_NAME).exe build/windows/release/$(EXE_NAME).exe
+windows: build/windows/debug/$(EXE_NAME).exe build/windows/release/$(EXE_NAME).exe
 
-web: lib/web/libraylib.web.a build/web/debug/index.html build/web/release/index.html 
+web: build/web/debug/index.html build/web/release/index.html 
 
 build/linux/debug/%.o: $(D_SRC)/%.c | build/linux/debug
 	$(LINUX_CC) $(LINUX_CFLAGS_DEBUG) -c $< -o $@
 
-build/linux/debug/$(EXE_NAME): $(patsubst $(D_SRC)/%.c,build/linux/debug/%.o,$(SOURCES))
+build/linux/debug/$(EXE_NAME): $(patsubst $(D_SRC)/%.c,build/linux/debug/%.o,$(SOURCES)) lib/linux/libraylib.a
 	$(LINUX_CC) $(filter %.o,$^) $(LINUX_LINK_FLAGS) -o $@
 
 build/linux/release/%.o: $(D_SRC)/%.c | build/linux/release
 	$(LINUX_CC) $(LINUX_CFLAGS_RELEASE) -c $< -o $@
 
-build/linux/release/$(EXE_NAME): $(patsubst $(D_SRC)/%.c,build/linux/release/%.o,$(SOURCES))
+build/linux/release/$(EXE_NAME): $(patsubst $(D_SRC)/%.c,build/linux/release/%.o,$(SOURCES)) lib/linux/libraylib.a
 	$(LINUX_CC) $(filter %.o,$^) $(LINUX_LINK_FLAGS) -o $@
 
 build/windows/debug/%.o: $(D_SRC)/%.c | build/windows/debug
 	$(WINDOWS_CC) $(WINDOWS_CFLAGS_DEBUG) -c $< -o $@
 
-build/windows/debug/$(EXE_NAME).exe: $(patsubst $(D_SRC)/%.c,build/windows/debug/%.o,$(SOURCES))
+build/windows/debug/$(EXE_NAME).exe: $(patsubst $(D_SRC)/%.c,build/windows/debug/%.o,$(SOURCES)) lib/windows/libraylib.a
 	$(WINDOWS_CC) $(filter %.o,$^) $(WINDOWS_LINK_FLAGS) -o $@
 
 build/windows/release/%.o: $(D_SRC)/%.c | build/windows/release
 	$(WINDOWS_CC) $(WINDOWS_CFLAGS_RELEASE) -c $< -o $@
 
-build/windows/release/$(EXE_NAME).exe: $(patsubst $(D_SRC)/%.c,build/windows/release/%.o,$(SOURCES))
+build/windows/release/$(EXE_NAME).exe: $(patsubst $(D_SRC)/%.c,build/windows/release/%.o,$(SOURCES)) lib/windows/libraylib.a
 	$(WINDOWS_CC) $(filter %.o,$^) $(WINDOWS_LINK_FLAGS) -o $@
 
 build/web/debug/%.o: $(D_SRC)/%.c | build/web/debug
 	$(WEB_CC) $(WEB_CFLAGS_DEBUG) -c $< -o $@
 
-build/web/debug/index.html: $(patsubst $(D_SRC)/%.c,build/web/debug/%.o,$(SOURCES))
-	$(WEB_CC) $^ $(WEB_LINK_FLAGS) -o $@
+build/web/debug/index.html: $(patsubst $(D_SRC)/%.c,build/web/debug/%.o,$(SOURCES)) lib/web/libraylib.web.a
+	$(WEB_CC) $(filter %.o,$^) $(WEB_LINK_FLAGS) -o $@
 
 build/web/release/%.o: $(D_SRC)/%.c | build/web/release
 	$(WEB_CC) $(WEB_CFLAGS_RELEASE) -c $< -o $@
 
-build/web/release/index.html: $(patsubst $(D_SRC)/%.c,build/web/release/%.o,$(SOURCES))
-	$(WEB_CC) $^ $(WEB_LINK_FLAGS) -o $@
+build/web/release/index.html: $(patsubst $(D_SRC)/%.c,build/web/release/%.o,$(SOURCES)) lib/web/libraylib.web.a
+	$(WEB_CC) $(filter %.o,$^) $(WEB_LINK_FLAGS) -o $@
 
 lib/linux/libraylib.a: | lib/linux
 	@echo "Building raylib $(RL_VERSION) for Linux..."
